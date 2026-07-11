@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
-from app.models.schemas import Language, Submission, SubmissionRequest, SubmissionSource
+from app.models.schemas import EntryMethod, Language, Submission, SubmissionRequest, SubmissionSource
 from app.services.file_handler import (
     UploadValidationError,
     decode_source,
@@ -28,13 +28,21 @@ router = APIRouter(prefix="/api/submissions", tags=["submission"])
 _SUBMISSIONS: dict[str, Submission] = {}
 
 
-def _build_submission(*, language: Language, source: SubmissionSource, code: str, filename: str | None) -> Submission:
+def _build_submission(
+    *,
+    language: Language,
+    source: SubmissionSource,
+    code: str,
+    filename: str | None,
+    entry_method: EntryMethod | None = None,
+) -> Submission:
     validator = get_validator(language.value)
     validation = validator.validate(code)
     submission = Submission(
         language=language,
         source=source,
         filename=filename,
+        entry_method=entry_method,
         code=code,
         size_bytes=len(code.encode("utf-8")),
         validation=validation,
@@ -48,9 +56,10 @@ def submit_pasted_code(payload: SubmissionRequest) -> Submission:
     """Accept directly pasted source code and run syntax validation against it."""
     return _build_submission(
         language=payload.language,
-        source=SubmissionSource.PASTE,
+        source=SubmissionSource.MANUAL,
         code=payload.code,
         filename=None,
+        entry_method=payload.entry_method,
     )
 
 

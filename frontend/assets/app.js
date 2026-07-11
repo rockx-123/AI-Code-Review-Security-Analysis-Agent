@@ -49,6 +49,19 @@
   const codeGutter = el("code-gutter");
   const charCount = el("char-count");
 
+  // Tracks how the last change to the editor happened. A real Ctrl+V / right-click
+  // paste fires a "paste" event right after the keydown, so it correctly overrides
+  // "typed" below. This reflects the most recent action, not a full edit history.
+  let entryMethod = "typed";
+  codeInput.addEventListener("paste", () => {
+    entryMethod = "pasted";
+  });
+  codeInput.addEventListener("keydown", (e) => {
+    if (!["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+      entryMethod = "typed";
+    }
+  });
+
   function refreshGutter() {
     const lineCount = Math.max(1, codeInput.value.split("\n").length);
     codeGutter.textContent = Array.from({ length: lineCount }, (_, i) => i + 1).join("\n");
@@ -123,6 +136,7 @@
     resultsMeta.innerHTML = `
       <span>Language: <b>${submission.language}</b></span>
       <span>Source: <b>${submission.source}</b></span>
+      ${submission.entry_method ? `<span>Entry: <b>${submission.entry_method}</b></span>` : ""}
       ${submission.filename ? `<span>File: <b>${submission.filename}</b></span>` : ""}
       <span>Size: <b>${submission.size_bytes} bytes</b></span>
     `;
@@ -150,7 +164,7 @@
     const res = await fetch(`${API_BASE_URL}/api/submissions/paste`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language, code }),
+      body: JSON.stringify({ language, code, entry_method: entryMethod }),
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));

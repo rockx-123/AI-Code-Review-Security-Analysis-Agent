@@ -29,8 +29,13 @@ class Language(str, Enum):
 
 
 class SubmissionSource(str, Enum):
-    PASTE = "paste"
+    MANUAL = "manual"
     UPLOAD = "upload"
+
+
+class EntryMethod(str, Enum):
+    TYPED = "typed"
+    PASTED = "pasted"
 
 
 class Severity(str, Enum):
@@ -61,6 +66,7 @@ class SubmissionRequest(BaseModel):
     """Body for POST /api/submissions when pasting code."""
     language: Language
     code: str = Field(..., min_length=1, description="Raw source code")
+    entry_method: EntryMethod | None = None
 
     model_config = {
         "json_schema_extra": {
@@ -74,6 +80,7 @@ class Submission(BaseModel):
     language: Language
     source: SubmissionSource
     filename: str | None = None
+    entry_method: EntryMethod | None = None
     code: str
     size_bytes: int
     created_at: datetime = Field(default_factory=_now)
