@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI Code Review &amp; Security Analysis Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+
+<div class="bg-scene" aria-hidden="true">
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+  <div class="grid-overlay"></div>
+</div>
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar glass">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" width="22" height="22" fill="none">
+          <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M16 10L21 13V19L16 22L11 19V13L16 10Z" fill="currentColor" opacity="0.85"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Sentinel<em>Review</em></span>
+        <span class="brand-sub">AI code review &amp; security analysis</span>
+      </div>
+    </div>
+
+    <nav class="pipeline-rail" aria-label="Review pipeline stages">
+      <div class="rail-heading">Review pipeline</div>
+
+      <div class="rail-node is-active" data-stage="1">
+        <div class="rail-dot"><span>1</span></div>
+        <div class="rail-copy">
+          <span class="rail-name">Code submission</span>
+          <span class="rail-state">Live — paste or upload</span>
+        </div>
+      </div>
+      <div class="rail-connector"></div>
+
+      <div class="rail-node" data-stage="2">
+        <div class="rail-dot"><span>2</span></div>
+        <div class="rail-copy">
+          <span class="rail-name">Code analysis + security scan</span>
+          <span class="rail-state">Planned — milestone 2</span>
+        </div>
+      </div>
+      <div class="rail-connector"></div>
+
+      <div class="rail-node" data-stage="3">
+        <div class="rail-dot"><span>3</span></div>
+        <div class="rail-copy">
+          <span class="rail-name">Remediation + PR summary</span>
+          <span class="rail-state">Planned — milestone 3</span>
+        </div>
+      </div>
+      <div class="rail-connector"></div>
+
+      <div class="rail-node" data-stage="4">
+        <div class="rail-dot"><span>4</span></div>
+        <div class="rail-copy">
+          <span class="rail-name">Conversational assistant + export</span>
+          <span class="rail-state">Planned — milestone 4</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="kb-status glass-inset" id="kb-status">
+      <div class="kb-status-row">
+        <i class="dot dot-idle" id="kb-dot"></i>
+        <span id="kb-status-text">Checking knowledge base…</span>
+      </div>
+      <div class="kb-meta" id="kb-meta"></div>
+    </div>
+
+    <div class="sidebar-foot">
+      <span>Milestone 1 of 4</span>
+      <span class="foot-sep">·</span>
+      <span>Backend: <code id="api-base-label">—</code></span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <header class="main-header">
+      <h1>Submit code for review</h1>
+      <p>Paste a snippet or upload a <code>.py</code> / <code>.java</code> file. Milestone 1 runs syntax validation and prepares your code for the analysis agents landing in milestone 2.</p>
+    </header>
+
+    <section class="panel glass" aria-label="Code submission">
+
+      <div class="panel-tabs" role="tablist">
+        <button class="tab-btn is-active" data-mode="paste" role="tab" aria-selected="true">
+          <i class="ti ti-forms" aria-hidden="true"></i> Paste code
+        </button>
+        <button class="tab-btn" data-mode="upload" role="tab" aria-selected="false">
+          <i class="ti ti-upload" aria-hidden="true"></i> Upload file
+        </button>
+      </div>
+
+      <div class="submit-toolbar">
+        <div class="lang-switch" role="radiogroup" aria-label="Language">
+          <button class="lang-btn is-active" data-lang="python" role="radio" aria-checked="true">Python</button>
+          <button class="lang-btn" data-lang="java" role="radio" aria-checked="false">Java</button>
+        </div>
+        <span class="char-count" id="char-count">0 characters</span>
+      </div>
+
+      <div class="submit-view" id="view-paste">
+        <div class="code-frame">
+          <div class="code-gutter" id="code-gutter">1</div>
+          <textarea id="code-input" class="code-input" spellcheck="false"
+            placeholder="def calculate_total(cart):&#10;    total = 0&#10;    for item in cart:&#10;        total += item.price&#10;    return total"></textarea>
+        </div>
+      </div>
+
+      <div class="submit-view is-hidden" id="view-upload">
+        <label class="dropzone" id="dropzone" for="file-input">
+          <i class="ti ti-file-code" aria-hidden="true"></i>
+          <span class="dropzone-title">Drop a .py or .java file here</span>
+          <span class="dropzone-sub">or click to browse — max 1&nbsp;MB</span>
+          <input type="file" id="file-input" accept=".py,.java" hidden />
+        </label>
+        <div class="upload-file-chip is-hidden" id="upload-chip">
+          <i class="ti ti-file-code" aria-hidden="true"></i>
+          <span id="upload-filename">—</span>
+          <button class="chip-clear" id="upload-clear" aria-label="Remove file"><i class="ti ti-x" aria-hidden="true"></i></button>
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn-primary" id="submit-btn">
+          <i class="ti ti-shield-check" aria-hidden="true"></i>
+          Validate &amp; submit
+        </button>
+        <span class="hint" id="submit-hint">Validation runs locally in milestone 1 — no code leaves this checked-in codebase.</span>
+      </div>
+
+    </section>
+
+    <section class="panel glass is-hidden" id="results-panel" aria-live="polite">
+      <div class="results-header">
+        <h2 id="results-title">Validation result</h2>
+        <span class="badge" id="results-badge">—</span>
+      </div>
+      <div class="results-meta" id="results-meta"></div>
+      <div class="results-errors" id="results-errors"></div>
+    </section>
+
+    <section class="panel glass" aria-label="Secure coding knowledge base">
+      <div class="results-header">
+        <h2>Secure coding knowledge base</h2>
+        <span class="badge badge-muted">RAG-powered</span>
+      </div>
+      <p class="panel-desc">Search the indexed OWASP guidelines, secure coding standards, and code-smell references that ground milestone 2's findings and milestone 4's assistant.</p>
+
+      <div class="kb-search-row">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <input type="text" id="kb-query" placeholder="e.g. how do I prevent SQL injection?" />
+        <button class="btn-secondary" id="kb-search-btn">Search</button>
+      </div>
+
+      <div class="kb-results" id="kb-results"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

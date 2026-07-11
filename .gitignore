@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Env
+.env
+*.env.local
+
+# Vector store data (regenerate via `python -m app.rag.ingest`)
+backend/data/vector_store/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Node (if a future milestone adds tooling)
+node_modules/
