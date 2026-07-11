@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # AI Code Review & Security Analysis Agent
 
 An intelligent multi-agent platform that automatically analyzes Python and Java source code
@@ -91,3 +92,7 @@ See [`docs/milestones.md`](docs/milestones.md). In short:
 - **Milestone 2:** Code Analysis Agent + Security Vulnerability Agent + multi-agent orchestration.
 - **Milestone 3:** Remediation Agent + PR Summary Agent + Findings/Severity UI.
 - **Milestone 4:** Conversational Code Assistant (RAG Q&A), report generation/export, polish & hardening.
+=======
+# AI-Code-Review-Security-Analysis-Agent
+AI powered multi agent code review and security analysis platform with RAG-based secure coding assistant for Python and Java
+>>>>>>> 4cfaf7c2d03a0d0986334b2fd58fd1b99b3fdedc
