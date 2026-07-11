@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # AI Code Review & Security Analysis Agent
 
 An intelligent multi-agent platform that automatically analyzes Python and Java source code
