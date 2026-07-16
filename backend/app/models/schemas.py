@@ -29,8 +29,13 @@ class Language(str, Enum):
 
 
 class SubmissionSource(str, Enum):
-    PASTE = "paste"
+    MANUAL = "manual"
     UPLOAD = "upload"
+
+
+class EntryMethod(str, Enum):
+    TYPED = "typed"
+    PASTED = "pasted"
 
 
 class Severity(str, Enum):
@@ -58,13 +63,16 @@ class SyntaxValidationResult(BaseModel):
 
 
 class SubmissionRequest(BaseModel):
-    """Body for POST /api/submissions when pasting code."""
+    """Body for POST /api/submissions when pasting/typing code directly."""
     language: Language
     code: str = Field(..., min_length=1, description="Raw source code")
+    entry_method: EntryMethod | None = Field(
+        default=None, description="Whether the code was typed or pasted, set by the frontend"
+    )
 
     model_config = {
         "json_schema_extra": {
-            "example": {"language": "python", "code": "def add(a, b):\n    return a + b\n"}
+            "example": {"language": "python", "code": "def add(a, b):\n    return a + b\n", "entry_method": "typed"}
         }
     }
 
@@ -74,10 +82,25 @@ class Submission(BaseModel):
     language: Language
     source: SubmissionSource
     filename: str | None = None
+    entry_method: EntryMethod | None = None
     code: str
     size_bytes: int
     created_at: datetime = Field(default_factory=_now)
     validation: SyntaxValidationResult
+
+
+class SubmissionSummary(BaseModel):
+    """Lightweight projection of a Submission for the recent-activity feed — omits the full
+    source code so listing many submissions stays cheap."""
+    id: str
+    language: Language
+    source: SubmissionSource
+    entry_method: EntryMethod | None = None
+    filename: str | None = None
+    is_valid: bool
+    size_bytes: int
+    created_at: datetime
+    snippet: str = Field(description="First line of the submitted code, truncated")
 
 
 # ---------------------------------------------------------------------------

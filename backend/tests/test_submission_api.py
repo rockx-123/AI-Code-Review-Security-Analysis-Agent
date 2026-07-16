@@ -23,7 +23,7 @@ def test_paste_valid_python():
     body = resp.json()
     assert body["validation"]["is_valid"] is True
     assert body["language"] == "python"
-    assert body["source"] == "paste"
+    assert body["source"] == "manual"
 
 
 def test_paste_invalid_python_returns_error_detail():

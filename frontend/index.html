@@ -3,29 +3,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AI Code Review &amp; Security Analysis Agent</title>
+<title>SentinelReview — AI Code Review & Security Analysis Agent</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
 
 <div class="bg-scene" aria-hidden="true">
-  <div class="glow glow-a"></div>
-  <div class="glow glow-b"></div>
-  <div class="grid-overlay"></div>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
 </div>
 
 <div class="app-shell">
 
   <!-- ============ SIDEBAR ============ -->
-  <aside class="sidebar glass">
+  <aside class="sidebar card">
     <div class="brand">
       <div class="brand-mark">
-        <svg viewBox="0 0 32 32" width="22" height="22" fill="none">
-          <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          <path d="M16 10L21 13V19L16 22L11 19V13L16 10Z" fill="currentColor" opacity="0.85"/>
+        <svg viewBox="0 0 32 32" width="24" height="24" fill="none">
+          <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M16 10L21 13V19L16 22L11 19V13L16 10Z" fill="currentColor"/>
         </svg>
       </div>
       <div class="brand-text">
@@ -34,51 +34,59 @@
       </div>
     </div>
 
-    <nav class="pipeline-rail" aria-label="Review pipeline stages">
-      <div class="rail-heading">Review pipeline</div>
-
-      <div class="rail-node is-active" data-stage="1">
-        <div class="rail-dot"><span>1</span></div>
-        <div class="rail-copy">
-          <span class="rail-name">Code submission</span>
-          <span class="rail-state">Live — paste or upload</span>
+    <div>
+      <div class="section-heading">Review pipeline</div>
+      <nav class="pipeline-rail" aria-label="Review pipeline stages">
+        <div class="rail-node is-active" data-stage="1">
+          <div class="rail-dot"><span>1</span></div>
+          <div class="rail-copy">
+            <span class="rail-name">Code submission</span>
+            <span class="rail-state">Live — paste or upload</span>
+          </div>
         </div>
-      </div>
-      <div class="rail-connector"></div>
+        <div class="rail-connector"></div>
 
-      <div class="rail-node" data-stage="2">
-        <div class="rail-dot"><span>2</span></div>
-        <div class="rail-copy">
-          <span class="rail-name">Code analysis + security scan</span>
-          <span class="rail-state">Planned — milestone 2</span>
+        <div class="rail-node" data-stage="2">
+          <div class="rail-dot"><span>2</span></div>
+          <div class="rail-copy">
+            <span class="rail-name">Analysis + security scan</span>
+            <span class="rail-state">Planned — milestone 2</span>
+          </div>
         </div>
-      </div>
-      <div class="rail-connector"></div>
+        <div class="rail-connector"></div>
 
-      <div class="rail-node" data-stage="3">
-        <div class="rail-dot"><span>3</span></div>
-        <div class="rail-copy">
-          <span class="rail-name">Remediation + PR summary</span>
-          <span class="rail-state">Planned — milestone 3</span>
+        <div class="rail-node" data-stage="3">
+          <div class="rail-dot"><span>3</span></div>
+          <div class="rail-copy">
+            <span class="rail-name">Remediation + PR summary</span>
+            <span class="rail-state">Planned — milestone 3</span>
+          </div>
         </div>
-      </div>
-      <div class="rail-connector"></div>
+        <div class="rail-connector"></div>
 
-      <div class="rail-node" data-stage="4">
-        <div class="rail-dot"><span>4</span></div>
-        <div class="rail-copy">
-          <span class="rail-name">Conversational assistant + export</span>
-          <span class="rail-state">Planned — milestone 4</span>
+        <div class="rail-node" data-stage="4">
+          <div class="rail-dot"><span>4</span></div>
+          <div class="rail-copy">
+            <span class="rail-name">Conversational assistant</span>
+            <span class="rail-state">Planned — milestone 4</span>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
 
-    <div class="kb-status glass-inset" id="kb-status">
+    <div class="kb-status card-soft" id="kb-status">
       <div class="kb-status-row">
         <i class="dot dot-idle" id="kb-dot"></i>
         <span id="kb-status-text">Checking knowledge base…</span>
       </div>
       <div class="kb-meta" id="kb-meta"></div>
+    </div>
+
+    <div>
+      <div class="section-heading">Recent activity</div>
+      <div class="history-list" id="history-list">
+        <div class="history-empty">Your submissions this session will show up here.</div>
+      </div>
     </div>
 
     <div class="sidebar-foot">
@@ -91,12 +99,65 @@
   <!-- ============ MAIN ============ -->
   <main class="main">
 
-    <header class="main-header">
-      <h1>Submit code for review</h1>
-      <p>Paste a snippet or upload a <code>.py</code> / <code>.java</code> file. Milestone 1 runs syntax validation and prepares your code for the analysis agents landing in milestone 2.</p>
+    <header class="hero">
+      <span class="hero-eyebrow"><i class="ti ti-sparkles" aria-hidden="true"></i> Milestone 1 · Foundation</span>
+      <h1>Submit code, get instant feedback</h1>
+      <p>Paste a snippet or upload a <code>.py</code> / <code>.java</code> file. This step runs real syntax validation now — the AI review agents plug in over the next three milestones.</p>
+
+      <div class="how-it-works">
+        <div class="hiw-step">
+          <div class="hiw-icon"><i class="ti ti-upload" aria-hidden="true"></i></div>
+          <div class="hiw-title">1. Submit</div>
+          <div class="hiw-sub">Paste or upload code</div>
+        </div>
+        <div class="hiw-step is-locked">
+          <div class="hiw-icon"><i class="ti ti-search" aria-hidden="true"></i></div>
+          <div class="hiw-title">2. Analyze</div>
+          <div class="hiw-sub">Quality + security scan</div>
+        </div>
+        <div class="hiw-step is-locked">
+          <div class="hiw-icon"><i class="ti ti-tool" aria-hidden="true"></i></div>
+          <div class="hiw-title">3. Fix</div>
+          <div class="hiw-sub">Guided remediation</div>
+        </div>
+        <div class="hiw-step is-locked">
+          <div class="hiw-icon"><i class="ti ti-message-circle" aria-hidden="true"></i></div>
+          <div class="hiw-title">4. Ask</div>
+          <div class="hiw-sub">Chat about findings</div>
+        </div>
+      </div>
     </header>
 
-    <section class="panel glass" aria-label="Code submission">
+    <section class="panel card" aria-label="Where this helps">
+      <div class="results-header">
+        <h2>Where SentinelReview fits into your workflow</h2>
+        <span class="badge badge-muted">Use cases</span>
+      </div>
+      <div class="usecase-grid">
+        <div class="usecase-card">
+          <div class="usecase-icon usecase-icon-pink"><i class="ti ti-git-pull-request" aria-hidden="true"></i></div>
+          <div class="usecase-title">Before opening a PR</div>
+          <div class="usecase-sub">Catch syntax slip-ups and, from milestone 2 on, security/quality issues before a human reviewer ever sees them.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-icon usecase-icon-purple"><i class="ti ti-school" aria-hidden="true"></i></div>
+          <div class="usecase-title">Learning secure coding</div>
+          <div class="usecase-sub">Search the knowledge base directly to understand *why* a pattern is risky, grounded in OWASP guidance — not just told to fix it.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-icon usecase-icon-blue"><i class="ti ti-archive" aria-hidden="true"></i></div>
+          <div class="usecase-title">Auditing legacy code</div>
+          <div class="usecase-sub">Paste in older Python/Java modules nobody's touched in years to get a fast first pass before a deeper manual review.</div>
+        </div>
+        <div class="usecase-card">
+          <div class="usecase-icon usecase-icon-amber"><i class="ti ti-bulb" aria-hidden="true"></i></div>
+          <div class="usecase-title">Quick sanity checks</div>
+          <div class="usecase-sub">Paste a snippet you're unsure about mid-development — instant syntax validation, no need to switch to a full IDE.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel card" aria-label="Code submission">
 
       <div class="panel-tabs" role="tablist">
         <button class="tab-btn is-active" data-mode="paste" role="tab" aria-selected="true">
@@ -107,10 +168,17 @@
         </button>
       </div>
 
+      <div class="sample-row" id="sample-row">
+        <span class="sample-chip" data-sample="python-clean"><i class="ti ti-bulb" aria-hidden="true"></i> Try: Python cart total</span>
+        <span class="sample-chip" data-sample="java-clean"><i class="ti ti-bulb" aria-hidden="true"></i> Try: Java calculator</span>
+        <span class="sample-chip" data-sample="python-broken"><i class="ti ti-bug" aria-hidden="true"></i> Try: broken syntax</span>
+      </div>
+
       <div class="submit-toolbar">
         <div class="lang-switch" role="radiogroup" aria-label="Language">
           <button class="lang-btn is-active" data-lang="python" role="radio" aria-checked="true">Python</button>
           <button class="lang-btn" data-lang="java" role="radio" aria-checked="false">Java</button>
+          <span class="lang-more" title="More languages planned as the platform grows">+ more soon</span>
         </div>
         <span class="char-count" id="char-count">0 characters</span>
       </div>
@@ -120,6 +188,7 @@
           <div class="code-gutter" id="code-gutter">1</div>
           <textarea id="code-input" class="code-input" spellcheck="false"
             placeholder="def calculate_total(cart):&#10;    total = 0&#10;    for item in cart:&#10;        total += item.price&#10;    return total"></textarea>
+          <button class="copy-btn" id="copy-code-btn" aria-label="Copy code" type="button"><i class="ti ti-copy" aria-hidden="true"></i></button>
         </div>
       </div>
 
@@ -137,7 +206,7 @@
         </div>
       </div>
 
-      <div class="panel-actions">
+      <div class="panel-actions" id="panel-actions">
         <button class="btn-primary" id="submit-btn">
           <i class="ti ti-shield-check" aria-hidden="true"></i>
           Validate &amp; submit
@@ -147,7 +216,7 @@
 
     </section>
 
-    <section class="panel glass is-hidden" id="results-panel" aria-live="polite">
+    <section class="panel card is-hidden" id="results-panel" aria-live="polite">
       <div class="results-header">
         <h2 id="results-title">Validation result</h2>
         <span class="badge" id="results-badge">—</span>
@@ -156,12 +225,19 @@
       <div class="results-errors" id="results-errors"></div>
     </section>
 
-    <section class="panel glass" aria-label="Secure coding knowledge base">
+    <section class="panel card" aria-label="Secure coding knowledge base">
       <div class="results-header">
         <h2>Secure coding knowledge base</h2>
         <span class="badge badge-muted">RAG-powered</span>
       </div>
       <p class="panel-desc">Search the indexed OWASP guidelines, secure coding standards, and code-smell references that ground milestone 2's findings and milestone 4's assistant.</p>
+
+      <div class="kb-filter-row" id="kb-filter-row">
+        <span class="kb-chip chip-all is-active" data-category="">All topics</span>
+        <span class="kb-chip chip-owasp" data-category="owasp">OWASP</span>
+        <span class="kb-chip chip-secure-coding" data-category="secure-coding">Secure coding</span>
+        <span class="kb-chip chip-code-smell" data-category="code-smell">Code smells</span>
+      </div>
 
       <div class="kb-search-row">
         <i class="ti ti-search" aria-hidden="true"></i>
