@@ -1,7 +1,19 @@
 (() => {
   "use strict";
 
-  const API_BASE_URL = window.API_BASE_URL || "http://localhost:8000";
+  // Auto-detects the backend's forwarded URL in GitHub Codespaces (same subdomain,
+  // different port number), so nobody has to hand-edit a URL after every restart.
+  function detectApiBaseUrl() {
+    if (window.API_BASE_URL) return window.API_BASE_URL;
+    const { hostname, protocol } = window.location;
+    const codespacesMatch = hostname.match(/^(.*)-\d+\.app\.github\.dev$/);
+    if (codespacesMatch) {
+      return `${protocol}//${codespacesMatch[1]}-8000.app.github.dev`;
+    }
+    return `${protocol}//${hostname.split(":")[0]}:8000`;
+  }
+
+  const API_BASE_URL = detectApiBaseUrl();
 
   const el = (id) => document.getElementById(id);
   const apiLabel = el("api-base-label");
