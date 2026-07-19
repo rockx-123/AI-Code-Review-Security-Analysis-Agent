@@ -293,7 +293,8 @@
       const result = await res.json();
 
       if (!result.ran) {
-        outputBody.textContent = result.error || result.stderr || "Execution did not run.";
+        const parts = [result.error, result.stderr].filter(Boolean);
+        outputBody.textContent = parts.length ? parts.join("\n\n") : "Execution did not run.";
         outputMeta.textContent = "not run";
         return;
       }
