@@ -23,6 +23,11 @@ class Settings(BaseSettings):
     max_upload_size_bytes: int = 1_048_576  # 1 MB
     allowed_extensions: str = ".py,.java"
 
+    # --- Code execution (experimental, off by default — see docs/code-execution-safety.md) ---
+    enable_code_execution: bool = False
+    execution_timeout_seconds: int = 5
+    execution_max_output_chars: int = 4000
+
     # --- RAG / vector store ---
     vector_store_dir: str = "./data/vector_store"
     vector_store_collection: str = "secure_coding_kb"

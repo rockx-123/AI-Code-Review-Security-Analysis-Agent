@@ -104,6 +104,26 @@ class SubmissionSummary(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Code execution (experimental, off by default — see docs/code-execution-safety.md)
+# ---------------------------------------------------------------------------
+
+class ExecutionRequest(BaseModel):
+    language: Language
+    code: str = Field(..., min_length=1)
+
+
+class ExecutionResult(BaseModel):
+    ran: bool
+    stdout: str = ""
+    stderr: str = ""
+    exit_code: int | None = None
+    timed_out: bool = False
+    truncated: bool = False
+    duration_ms: int = 0
+    error: str | None = None
+
+
+# ---------------------------------------------------------------------------
 # Finding / ReviewSummary — contract frozen in M1, populated starting M2/M3
 # ---------------------------------------------------------------------------
 

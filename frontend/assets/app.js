@@ -1,8 +1,11 @@
 (() => {
   "use strict";
 
-  // Auto-detects the backend's forwarded URL in GitHub Codespaces (same subdomain,
-  // different port number), so nobody has to hand-edit a URL after every restart.
+  // In GitHub Codespaces, the frontend and backend are served on different forwarded
+  // subdomains that only differ by port number (e.g. ...-5173.app.github.dev vs
+  // ...-8000.app.github.dev). Detect that pattern automatically so nobody has to hand-edit
+  // a URL every time a Codespace restarts. Falls back to plain localhost for local dev, or
+  // to an explicit window.API_BASE_URL override if one is set before this script runs.
   function detectApiBaseUrl() {
     if (window.API_BASE_URL) return window.API_BASE_URL;
     const { hostname, protocol } = window.location;
@@ -32,13 +35,17 @@
     "python-clean": {
       language: "python",
       code:
+        "class Item:\n" +
+        "    def __init__(self, name, price):\n" +
+        "        self.name = name\n" +
+        "        self.price = price\n\n" +
         "def calculate_total(cart):\n" +
         "    total = 0\n" +
         "    for item in cart:\n" +
         "        total += item.price\n" +
         "    return total\n\n" +
-        "cart = [Item(price=9.5), Item(price=14.0)]\n" +
-        "print(calculate_total(cart))\n",
+        "cart = [Item(\"Notebook\", 9.5), Item(\"Pen\", 2.25), Item(\"Backpack\", 32.0)]\n" +
+        "print(f\"Total: {calculate_total(cart):.2f}\")\n",
     },
     "java-clean": {
       language: "java",
@@ -215,9 +222,19 @@
   const resultsBadge = el("results-badge");
   const resultsMeta = el("results-meta");
   const resultsErrors = el("results-errors");
+  const runRow = el("run-row");
+  const runBtn = el("run-btn");
+  const outputPanel = el("output-panel");
+  const outputMeta = el("output-meta");
+  const outputBody = el("output-body");
+
+  let currentSubmission = null;
 
   function renderResults(submission) {
+    currentSubmission = submission;
     resultsPanel.classList.remove("is-hidden");
+    outputPanel.classList.add("is-hidden");
+    outputBody.textContent = "";
     const valid = submission.validation.is_valid;
 
     resultsBadge.textContent = valid ? "Syntax valid" : "Syntax errors found";
@@ -241,8 +258,62 @@
       resultsErrors.appendChild(row);
     });
 
+    runRow.classList.toggle("is-hidden", !valid);
     if (valid) celebrate(panelActions);
   }
+
+  runBtn.addEventListener("click", async () => {
+    if (!currentSubmission) return;
+    runBtn.disabled = true;
+    const originalLabel = runBtn.innerHTML;
+    runBtn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Running…';
+    outputPanel.classList.remove("is-hidden");
+    outputBody.textContent = "";
+    outputMeta.textContent = "";
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/execution/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language: currentSubmission.language, code: currentSubmission.code }),
+      });
+
+      if (res.status === 403) {
+        const body = await res.json().catch(() => ({}));
+        outputBody.textContent = body.detail || "Code execution is disabled on this server.";
+        outputMeta.textContent = "disabled";
+        return;
+      }
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        outputBody.textContent = body.detail || `Request failed (${res.status})`;
+        return;
+      }
+
+      const result = await res.json();
+
+      if (!result.ran) {
+        outputBody.textContent = result.error || result.stderr || "Execution did not run.";
+        outputMeta.textContent = "not run";
+        return;
+      }
+
+      let text = result.stdout || "";
+      if (result.stderr) {
+        text += (text ? "\n" : "") + result.stderr;
+      }
+      outputBody.textContent = text || "(no output)";
+      outputMeta.textContent =
+        (result.timed_out ? "timed out · " : "") +
+        `exit code ${result.exit_code ?? "—"} · ${result.duration_ms}ms` +
+        (result.truncated ? " · truncated" : "");
+    } catch (err) {
+      outputBody.textContent = `Couldn't reach the backend: ${err.message}`;
+    } finally {
+      runBtn.disabled = false;
+      runBtn.innerHTML = originalLabel;
+    }
+  });
 
   async function submitPaste() {
     const code = codeInput.value;

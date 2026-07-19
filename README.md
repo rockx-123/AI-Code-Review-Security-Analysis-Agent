@@ -63,11 +63,7 @@ Full detail, agent contracts, and data models: [`docs/architecture.md`](docs/arc
 | Research: OWASP standards, secure coding guidelines, code smells, RAG architecture | [`docs/research-notes.md`](docs/research-notes.md) |
 | System architecture, agent responsibilities, orchestration flow, data models | [`docs/architecture.md`](docs/architecture.md) |
 | Code Submission Module — paste + upload, Python/Java syntax validation | `backend/app/api/routes/submission.py`, `backend/app/services/syntax_validator.py`, `frontend/` |
-<<<<<<< HEAD
 | Secure Coding Knowledge Base + RAG ingestion pipeline (chunk → embed → index) — **3 documents, 22 chunks**, see [`docs/knowledge-base.md`](docs/knowledge-base.md) | `backend/app/rag/` |
-=======
-| Secure Coding Knowledge Base + RAG ingestion pipeline (chunk → embed → index) | `backend/app/rag/` |
->>>>>>> ead2f9809bc482b6a1a253a60db331070e51aefe
 
 The Code Analysis, Security Vulnerability, Remediation, and PR Summary **agents**, the
 conversational assistant, findings UI, and report export are **not built yet** — those land in

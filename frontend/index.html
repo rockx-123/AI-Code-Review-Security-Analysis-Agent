@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css" />
 <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
@@ -223,6 +224,19 @@
       </div>
       <div class="results-meta" id="results-meta"></div>
       <div class="results-errors" id="results-errors"></div>
+      <div class="run-row is-hidden" id="run-row">
+        <button class="btn-secondary" id="run-btn" type="button">
+          <i class="ti ti-player-play" aria-hidden="true"></i> Run code &amp; see output
+        </button>
+        <span class="hint">Experimental — see <code>docs/code-execution-safety.md</code>. Off by default on the server.</span>
+      </div>
+      <div class="output-panel is-hidden" id="output-panel">
+        <div class="output-header">
+          <span class="output-title"><i class="ti ti-terminal-2" aria-hidden="true"></i> Output</span>
+          <span class="output-meta" id="output-meta"></span>
+        </div>
+        <pre class="output-body" id="output-body"></pre>
+      </div>
     </section>
 
     <section class="panel card" aria-label="Secure coding knowledge base">
@@ -251,7 +265,6 @@
   </main>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>
