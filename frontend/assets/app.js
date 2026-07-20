@@ -127,6 +127,12 @@
   const charCount = el("char-count");
   const copyCodeBtn = el("copy-code-btn");
 
+  // Inline SVGs (not icon-font glyphs) for the copy/check toggle — some icon-font webfont
+  // builds lag behind and are missing newer glyphs, which showed up as blank buttons. An
+  // inline SVG has no external-loading dependency at all, so it can't silently fail this way.
+  const SVG_COPY = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>';
+  const SVG_CHECK = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
   function refreshGutter() {
     const lineCount = Math.max(1, codeInput.value.split("\n").length);
     codeGutter.textContent = Array.from({ length: lineCount }, (_, i) => i + 1).join("\n");
@@ -148,10 +154,10 @@
     try {
       await navigator.clipboard.writeText(codeInput.value);
       copyCodeBtn.classList.add("is-copied");
-      copyCodeBtn.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i>';
+      copyCodeBtn.innerHTML = SVG_CHECK;
       setTimeout(() => {
         copyCodeBtn.classList.remove("is-copied");
-        copyCodeBtn.innerHTML = '<i class="ti ti-copy" aria-hidden="true"></i>';
+        copyCodeBtn.innerHTML = SVG_COPY;
       }, 1400);
     } catch { /* clipboard permissions denied — silently ignore */ }
   });
@@ -493,14 +499,14 @@
             <span class="kb-result-score">match ${(r.score * 100).toFixed(0)}%</span>
           </div>
           <div class="kb-result-text">${escapeHtml(r.text.slice(0, 320))}${r.text.length > 320 ? "…" : ""}</div>
-          <button class="kb-copy-btn" type="button" aria-label="Copy excerpt"><i class="ti ti-copy" aria-hidden="true"></i></button>
+          <button class="kb-copy-btn" type="button" aria-label="Copy excerpt">${SVG_COPY}</button>
         `;
         card.querySelector(".kb-copy-btn").addEventListener("click", async (ev) => {
           try {
             await navigator.clipboard.writeText(r.text);
             const btn = ev.currentTarget;
-            btn.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i>';
-            setTimeout(() => { btn.innerHTML = '<i class="ti ti-copy" aria-hidden="true"></i>'; }, 1200);
+            btn.innerHTML = SVG_CHECK;
+            setTimeout(() => { btn.innerHTML = SVG_COPY; }, 1200);
           } catch { /* clipboard permissions denied — silently ignore */ }
         });
         kbResults.appendChild(card);
