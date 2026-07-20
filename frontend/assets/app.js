@@ -18,6 +18,40 @@
 
   const API_BASE_URL = detectApiBaseUrl();
 
+  // ---------------------------------------------------------------------
+  // Theme: light / dark / system. The initial theme is already applied by the inline
+  // bootstrap script in index.html's <head> (before first paint, to avoid a flash) — this
+  // just wires up the toggle buttons and keeps things in sync afterward.
+  // ---------------------------------------------------------------------
+  (function initThemeSwitch() {
+    const root = document.documentElement;
+    const buttons = document.querySelectorAll(".theme-btn");
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function applyChoice(choice) {
+      const effective = choice === "system" ? (media.matches ? "dark" : "light") : choice;
+      root.setAttribute("data-theme", effective);
+      root.setAttribute("data-theme-choice", choice);
+      localStorage.setItem("theme", choice);
+      buttons.forEach((b) => {
+        const active = b.dataset.themeChoice === choice;
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-checked", active ? "true" : "false");
+      });
+    }
+
+    buttons.forEach((b) => b.addEventListener("click", () => applyChoice(b.dataset.themeChoice)));
+
+    // Reflect the current system preference in the UI immediately (bootstrap script already
+    // set the right colors; this just syncs which button shows as active).
+    applyChoice(root.getAttribute("data-theme-choice") || "system");
+
+    // If "system" is selected and the OS theme changes while the page is open, follow it live.
+    media.addEventListener("change", () => {
+      if (root.getAttribute("data-theme-choice") === "system") applyChoice("system");
+    });
+  })();
+
   const el = (id) => document.getElementById(id);
   const apiLabel = el("api-base-label");
   if (apiLabel) apiLabel.textContent = API_BASE_URL.replace(/^https?:\/\//, "");

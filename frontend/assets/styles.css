@@ -46,6 +46,49 @@
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* ---------- Dark theme overrides ---------- */
+/* Applied via [data-theme="dark"] on <html>, set by theme.js (see index.html inline script for
+   the no-flash-on-load bootstrap). Accent colors stay the same across both themes — only
+   background/surface/text/border tokens change — so gradients and severity badges look
+   consistent regardless of theme. */
+[data-theme="dark"] {
+  --bg-1: #0b0714;
+  --bg-2: #0c0a18;
+  --bg-3: #0d0b16;
+
+  --surface: rgba(30, 24, 46, 0.62);
+  --surface-soft: rgba(30, 24, 46, 0.42);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text-primary: #f3f0fb;
+  --text-secondary: #b6aed6;
+  --text-muted: #8077a3;
+
+  --pink-soft: rgba(255, 77, 141, 0.16);
+  --purple-soft: rgba(124, 77, 255, 0.18);
+  --blue-soft: rgba(61, 168, 245, 0.16);
+  --amber-soft: rgba(255, 176, 32, 0.16);
+  --mint-soft: rgba(20, 195, 142, 0.16);
+  --coral-soft: rgba(255, 90, 95, 0.16);
+
+  --shadow-sm: 0 2px 10px -4px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 10px 30px -12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 50px -18px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .blob { opacity: 0.28; }
+[data-theme="dark"] .grid-overlay { opacity: 0.5; }
+[data-theme="dark"] .code-frame { background: #14101f; }
+[data-theme="dark"] .code-gutter { border-right-color: rgba(255, 255, 255, 0.06); }
+[data-theme="dark"] .bg-scene {
+  background:
+    radial-gradient(ellipse 90% 60% at 15% -10%, rgba(255, 77, 141, 0.14) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 100% 0%, rgba(124, 77, 255, 0.16) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(255, 176, 32, 0.08) 0%, transparent 50%),
+    var(--bg-1);
+}
+
 * { box-sizing: border-box; }
 
 html, body {
@@ -55,6 +98,37 @@ html, body {
   color: var(--text-primary);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  transition: color 0.2s ease;
+}
+
+.card, .card-soft, .bg-scene {
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ---------- Theme switch ---------- */
+
+.theme-switch {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+}
+.theme-btn {
+  width: 30px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.theme-btn:hover { color: var(--text-secondary); }
+.theme-btn.is-active {
+  background: var(--grad-brand);
+  color: #fff;
 }
 
 /* ---------- Ambient background scene ---------- */
@@ -101,8 +175,8 @@ html, body {
 /* ---------- Card primitive ---------- */
 
 .card {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(22px) saturate(160%);
@@ -110,8 +184,8 @@ html, body {
 }
 
 .card-soft {
-  background: rgba(255, 255, 255, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   backdrop-filter: blur(14px) saturate(150%);
   -webkit-backdrop-filter: blur(14px) saturate(150%);
@@ -351,7 +425,7 @@ html, body {
 .usecase-card {
   padding: 16px 16px 18px;
   border-radius: var(--radius-lg);
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--surface-soft);
   border: 1px solid var(--border);
   backdrop-filter: blur(10px) saturate(140%);
   -webkit-backdrop-filter: blur(10px) saturate(140%);
