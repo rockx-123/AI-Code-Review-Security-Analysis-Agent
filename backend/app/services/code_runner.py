@@ -35,18 +35,26 @@ _MAX_MEMORY_BYTES = 256 * 1024 * 1024  # 256 MB
 _MAX_CPU_SECONDS = 5
 
 
-def _limit_resources(limit_memory: bool = True) -> None:
+def _limit_resources(limit_memory: bool = True, limit_nproc: bool = True) -> None:
     """
     Best-effort rlimits applied in the child process before exec. POSIX only; silently skipped
     on platforms without the `resource` module (e.g. Windows).
 
-    `limit_memory` is off for Java: RLIMIT_AS caps *virtual address space*, not actual resident
-    memory, and the JVM reserves a large virtual address range just to start up (heap headroom,
-    metaspace, thread stacks) — often multiple GB — even for a trivial program with a tiny
-    actual footprint. A 256 MB cap makes `javac`/`java` fail to even initialize, unrelated to
-    whether the submitted code itself does anything memory-intensive. CPU time and process-count
-    limits are safe for Java and still applied either way; the wall-clock timeout is the primary
-    guardrail against a runaway Java program.
+    Both `limit_memory` and `limit_nproc` are off for Java, and for the same underlying reason:
+    these limits don't scale predictably with what the JVM actually needs, so a fixed cap sized
+    for a simple Python script breaks Java outright rather than containing it.
+
+    - RLIMIT_AS caps *virtual address space*, not resident memory. The JVM reserves a large
+      virtual range just to start up (heap headroom, metaspace, thread stacks) — often multiple
+      GB — even for a trivial program. A 256 MB cap makes `javac`/`java` fail to even initialize.
+    - RLIMIT_NPROC on Linux is a per-UID limit — it counts every process/thread owned by the
+      current user *system-wide*, not just this subprocess's descendants. In a shared container
+      (IDE server, extensions, and everything else already running under the same user), a low
+      fixed cap can be exceeded by the JVM's own startup threads (GC, JIT compiler, etc.) even
+      before the submitted code runs at all — independent of anything the submitted code does.
+
+    The wall-clock timeout (enforced by the subprocess.run `timeout=` argument, not here) is the
+    primary guardrail against a runaway Java program; CPU time is still capped either way.
     """
     if not _HAS_RESOURCE:
         return
@@ -54,7 +62,8 @@ def _limit_resources(limit_memory: bool = True) -> None:
         if limit_memory:
             resource.setrlimit(resource.RLIMIT_AS, (_MAX_MEMORY_BYTES, _MAX_MEMORY_BYTES))
         resource.setrlimit(resource.RLIMIT_CPU, (_MAX_CPU_SECONDS, _MAX_CPU_SECONDS))
-        resource.setrlimit(resource.RLIMIT_NPROC, (32, 32))
+        if limit_nproc:
+            resource.setrlimit(resource.RLIMIT_NPROC, (32, 32))
     except (ValueError, OSError):
         # Some hosts (containers with restrictive parent limits) reject certain rlimits —
         # fail open on the limit itself rather than crashing the whole execution feature.
@@ -74,7 +83,9 @@ def _truncate(text: str, limit: int) -> tuple[str, bool]:
     return text[:limit] + "\n… (output truncated)", True
 
 
-def _run_subprocess(cmd: list[str], cwd: str, timeout: int, limit_memory: bool = True) -> tuple[str, str, int | None, bool]:
+def _run_subprocess(
+    cmd: list[str], cwd: str, timeout: int, limit_memory: bool = True, limit_nproc: bool = True
+) -> tuple[str, str, int | None, bool]:
     try:
         proc = subprocess.run(
             cmd,
@@ -83,7 +94,7 @@ def _run_subprocess(cmd: list[str], cwd: str, timeout: int, limit_memory: bool =
             text=True,
             timeout=timeout,
             env=_stripped_env(),
-            preexec_fn=(lambda: _limit_resources(limit_memory)) if _HAS_RESOURCE else None,
+            preexec_fn=(lambda: _limit_resources(limit_memory, limit_nproc)) if _HAS_RESOURCE else None,
         )
         return proc.stdout, proc.stderr, proc.returncode, False
     except subprocess.TimeoutExpired as exc:
@@ -134,6 +145,7 @@ def run_java(code: str) -> ExecutionResult:
             cwd=tmp,
             timeout=settings.execution_timeout_seconds,
             limit_memory=False,
+            limit_nproc=False,
         )
         if compile_code != 0 or compile_timeout:
             duration_ms = int((time.monotonic() - start) * 1000)
@@ -153,6 +165,7 @@ def run_java(code: str) -> ExecutionResult:
             cwd=tmp,
             timeout=settings.execution_timeout_seconds,
             limit_memory=False,
+            limit_nproc=False,
         )
 
     duration_ms = int((time.monotonic() - start) * 1000)
