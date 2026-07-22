@@ -1,0 +1,18 @@
+from flask import request, render_template_string
+
+API_KEY = "prod-secret-token-12345"
+
+
+def risky_handler(user_id, org_id, role, region, status, tenant):
+    query = "SELECT * FROM users WHERE id = " + user_id
+    cursor.execute(query)
+    html = render_template_string("<div>" + request.args.get("name", "") + "</div>")
+    if user_id:
+        if org_id:
+            if role:
+                if region:
+                    print(status, tenant)
+    try:
+        return html
+    except:
+        return "error"

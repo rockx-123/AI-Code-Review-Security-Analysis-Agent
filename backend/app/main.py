@@ -18,11 +18,12 @@ settings = get_settings()
 app = FastAPI(
     title="AI Code Review & Security Analysis Agent",
     description=(
-        "Milestone 1: Code Submission Module + Secure Coding Knowledge Base (RAG). "
-        "Code Analysis, Security Vulnerability, Remediation, and PR Summary agents, the "
-        "Conversational Assistant, and report export land in Milestones 2-4."
+        "Milestone 2: Code Submission + Secure Coding Knowledge Base (RAG) + "
+        "Code Analysis and Security Vulnerability agents with parallel orchestration. "
+        "Remediation, PR Summary narrative generation, Conversational Assistant, and report "
+        "export land in Milestones 3-4."
     ),
-    version="0.1.0-m1",
+    version="0.2.0-m2",
 )
 
 app.add_middleware(
@@ -40,4 +41,4 @@ app.include_router(execution_router)
 
 @app.get("/api/health", tags=["meta"])
 def health() -> dict:
-    return {"status": "ok", "milestone": 1, "code_execution_enabled": settings.enable_code_execution}
+    return {"status": "ok", "milestone": 2, "code_execution_enabled": settings.enable_code_execution}
