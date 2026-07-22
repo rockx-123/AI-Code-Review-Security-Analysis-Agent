@@ -1,6 +1,6 @@
 # AI Code Review & Security Analysis Agent
 
-![Milestone](https://img.shields.io/badge/milestone-1%20of%204-4cc9f0)
+![Milestone](https://img.shields.io/badge/milestone-2%20of%204-4cc9f0)
 ![Status](https://img.shields.io/badge/status-in%20development-a78bfa)
 ![Python](https://img.shields.io/badge/python-3.11%2B-34d399)
 ![License](https://img.shields.io/badge/license-MIT-9aa3b8)
@@ -21,7 +21,7 @@ follow-up questions.
 
 - [Project status](#project-status)
 - [Architecture](#architecture)
-- [What's implemented in Milestone 1](#whats-implemented-in-milestone-1)
+- [What's implemented](#whats-implemented)
 - [Project structure](#project-structure)
 - [Getting started](#getting-started)
 - [Running tests](#running-tests)
@@ -29,13 +29,13 @@ follow-up questions.
 
 ## Project status
 
-**Milestone 1 of 4 complete.** See [`docs/milestones.md`](docs/milestones.md) for the full
+**Milestone 2 of 4 complete.** See [`docs/milestones.md`](docs/milestones.md) for the full
 roadmap and exactly what's built vs. planned.
 
 | Milestone | Focus | Status |
 |---|---|---|
 | 1 | Architecture, Code Submission Module, secure-coding RAG knowledge base | Complete |
-| 2 | Code Analysis Agent, Security Vulnerability Agent, multi-agent orchestration | Planned |
+| 2 | Code Analysis Agent, Security Vulnerability Agent, multi-agent orchestration | Complete |
 | 3 | Remediation Agent, PR Summary Agent, Findings & Severity UI | Planned |
 | 4 | Conversational Code Assistant, report generation & export, final polish | Planned |
 
@@ -56,7 +56,9 @@ Code Submission Module ──▶ Multi-Agent Orchestration (M2)
 Full detail, agent contracts, and data models: [`docs/architecture.md`](docs/architecture.md),
 [`docs/agent-design.md`](docs/agent-design.md), [`docs/data-models.md`](docs/data-models.md).
 
-## What's implemented in Milestone 1
+## What's implemented
+
+**Milestone 1:**
 
 | Deliverable | Where |
 |---|---|
@@ -65,10 +67,19 @@ Full detail, agent contracts, and data models: [`docs/architecture.md`](docs/arc
 | Code Submission Module — paste + upload, Python/Java syntax validation | `backend/app/api/routes/submission.py`, `backend/app/services/syntax_validator.py`, `frontend/` |
 | Secure Coding Knowledge Base + RAG ingestion pipeline (chunk → embed → index) — **3 documents, 22 chunks**, see [`docs/knowledge-base.md`](docs/knowledge-base.md) | `backend/app/rag/` |
 
-The Code Analysis, Security Vulnerability, Remediation, and PR Summary **agents**, the
-conversational assistant, findings UI, and report export are **not built yet** — those land in
-Milestones 2–4. The pipeline stepper in the UI previews what's coming; only the submission and
-validation step is functional today.
+**Milestone 2:**
+
+| Deliverable | Where |
+|---|---|
+| Code Analysis Agent — smells, complexity, design anti-patterns (Python `ast` + Java heuristics) | `backend/app/agents/code_analysis_python.py`, `code_analysis_java.py` |
+| Security Vulnerability Agent — SQLi, XSS, secrets, weak hashing, CSRF, broken access control | `backend/app/agents/security_python.py`, `security_java.py` |
+| Multi-agent orchestration — parallel execution, merged findings, per-agent failure isolation | `backend/app/agents/orchestrator.py` |
+| Detection accuracy validation — real fixtures, both true-positive and false-positive checks | `backend/tests/test_code_analysis_agent.py`, `test_security_agent.py`, `test_orchestrator.py` |
+| Full rule catalog with honest precision/limitation notes for every rule | [`docs/detection-rules.md`](docs/detection-rules.md) |
+
+The Remediation Agent, PR Summary Agent, Conversational Assistant, polished findings/severity UI,
+and report export are **not built yet** — those land in Milestones 3–4. The pipeline stepper in
+the UI previews what's coming.
 
 ## Project structure
 
@@ -130,6 +141,6 @@ pytest -q
 See [`docs/milestones.md`](docs/milestones.md) for full detail.
 
 - **Milestone 1 (done):** Research, architecture, Code Submission Module, secure-coding RAG knowledge base.
-- **Milestone 2:** Code Analysis Agent + Security Vulnerability Agent + multi-agent orchestration.
+- **Milestone 2 (done):** Code Analysis Agent + Security Vulnerability Agent + multi-agent orchestration.
 - **Milestone 3:** Remediation Agent + PR Summary Agent + Findings/Severity UI.
 - **Milestone 4:** Conversational Code Assistant (RAG Q&A), report generation/export, polish & hardening.

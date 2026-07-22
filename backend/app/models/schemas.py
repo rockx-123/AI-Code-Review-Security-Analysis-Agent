@@ -168,6 +168,11 @@ class ReviewSummary(BaseModel):
     top_risks: list[Finding] = Field(default_factory=list)
     narrative: str = ""
     findings: list[Finding] = Field(default_factory=list)
+    agent_errors: list[str] = Field(
+        default_factory=list,
+        description="Non-fatal per-agent failures — an agent erroring doesn't fail the whole "
+        "request (see orchestrator.py), but the failure is surfaced here rather than hidden.",
+    )
 
 
 # ---------------------------------------------------------------------------

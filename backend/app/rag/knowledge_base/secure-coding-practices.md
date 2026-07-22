@@ -45,7 +45,7 @@ forks, caches, and local clones.
 
 **Hardcoded secret example (vulnerable):**
 ```java
-String apiKey = "sk_live_51H8x9J2eZvKYlo2C";
+String apiKey = "sk_live_TESTONLY";
 ```
 Any reviewer, CI log, or repository access exposes this immediately, and rotating it requires a
 code change and redeploy rather than a config change.

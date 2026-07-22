@@ -16,12 +16,31 @@ as each milestone lands.
 `docs/research-notes.md`, `backend/app/api/routes/submission.py`,
 `backend/app/services/syntax_validator.py`, `backend/app/rag/*`, `frontend/*`.
 
-## Milestone 2 — Analysis & Detection (planned)
+## Milestone 2 — Analysis & Detection (Week 3–4) — ✅ Complete
 
-- Implement **Code Analysis Agent**: code smell detection, complexity metrics, design anti-patterns (Python via `ast`, Java via structural heuristics/parser).
-- Implement **Security Vulnerability Agent**: OWASP-mapped static checks (SQLi, XSS, CSRF, hardcoded secrets, insecure auth, broken access control) with severity scoring.
-- Build the **Multi-Agent Orchestration** layer: pipeline runner, shared findings schema, agent-to-agent handoff, error isolation.
-- Wire orchestration to the existing Code Submission Module so a submitted file triggers the pipeline automatically.
+| # | Task | Status |
+|---|---|---|
+| 1 | Build Code Analysis Agent — code smells, complexity, design anti-patterns, poor practices, severity-scored | ✅ |
+| 2 | Build Security Vulnerability Agent — OWASP-standard vulnerabilities, classified by type/severity, location-specific | ✅ |
+| 3 | Implement multi-agent orchestration — Code Analysis + Security Vulnerability run in parallel, merged into unified findings list | ✅ |
+| 4 | Validate agent detection accuracy across sample Python/Java codebases with known issues | ✅ |
+
+**Artifacts:** `backend/app/agents/` (code analysis + security detectors for Python and Java,
+orchestrator), `backend/app/api/routes/analysis.py`, `docs/detection-rules.md` (full rule catalog
++ honest precision/limitation notes for every rule), `backend/tests/test_code_analysis_agent.py`,
+`backend/tests/test_security_agent.py`, `backend/tests/test_orchestrator.py`,
+`backend/tests/test_analysis_api.py`.
+
+**What's detected:** long methods, long parameter lists, deep nesting, high cyclomatic
+complexity, god classes, mutable default arguments, swallowed/bare exceptions (code quality); SQL
+injection, hardcoded secrets, weak password hashing, reflected XSS, CSRF protection disabled, and
+a best-effort missing-authorization heuristic (security) — mapped to OWASP categories and CWE IDs,
+each security finding grounded with a knowledge base reference. Both agents run concurrently via a
+thread pool and are isolated from each other's failures (see `orchestrator.py`).
+
+**Not yet built (Milestone 3):** remediation suggestions/corrected code, the PR-style narrative
+summary, and the polished findings/severity UI. The API contract already has slots for all three
+(`Finding.remediation`, `ReviewSummary.narrative`) so their shape won't change when filled in.
 
 ## Milestone 3 — Remediation & Reporting UI (planned)
 

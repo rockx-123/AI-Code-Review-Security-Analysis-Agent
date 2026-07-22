@@ -8,6 +8,7 @@ Interactive API docs at /docs once running.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.routes.analysis import router as analysis_router
 from app.api.routes.execution import router as execution_router
 from app.api.routes.knowledge_base import router as knowledge_base_router
 from app.api.routes.submission import router as submission_router
@@ -19,10 +20,11 @@ app = FastAPI(
     title="AI Code Review & Security Analysis Agent",
     description=(
         "Milestone 1: Code Submission Module + Secure Coding Knowledge Base (RAG). "
-        "Code Analysis, Security Vulnerability, Remediation, and PR Summary agents, the "
-        "Conversational Assistant, and report export land in Milestones 2-4."
+        "Milestone 2: Code Analysis Agent + Security Vulnerability Agent + multi-agent "
+        "orchestration. Remediation, PR Summary agents, the Conversational Assistant, and "
+        "report export land in Milestones 3-4."
     ),
-    version="0.1.0-m1",
+    version="0.2.0-m2",
 )
 
 app.add_middleware(
@@ -36,8 +38,9 @@ app.add_middleware(
 app.include_router(submission_router)
 app.include_router(knowledge_base_router)
 app.include_router(execution_router)
+app.include_router(analysis_router)
 
 
 @app.get("/api/health", tags=["meta"])
 def health() -> dict:
-    return {"status": "ok", "milestone": 1, "code_execution_enabled": settings.enable_code_execution}
+    return {"status": "ok", "milestone": 2, "code_execution_enabled": settings.enable_code_execution}

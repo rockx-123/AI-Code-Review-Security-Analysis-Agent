@@ -805,6 +805,78 @@ html, body {
 .kb-copy-btn:hover { color: var(--purple); border-color: var(--purple); }
 .kb-empty { color: var(--text-muted); font-size: 13px; padding: 8px 2px; font-weight: 500; }
 
+/* ---------- Findings panel (Milestone 2) ---------- */
+
+.severity-summary { display: flex; gap: 6px; flex-wrap: wrap; }
+.sev-chip {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border-strong);
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.sev-chip .sev-dot { width: 6px; height: 6px; border-radius: 50%; }
+.sev-chip-critical { background: var(--coral-soft); color: #c62328; }
+.sev-chip-critical .sev-dot { background: var(--coral); }
+.sev-chip-high { background: var(--coral-soft); color: #c62328; opacity: 0.85; }
+.sev-chip-high .sev-dot { background: var(--coral); }
+.sev-chip-medium { background: var(--amber-soft); color: #a06600; }
+.sev-chip-medium .sev-dot { background: var(--amber); }
+.sev-chip-low { background: var(--blue-soft); color: #1477bf; }
+.sev-chip-low .sev-dot { background: var(--blue); }
+.sev-chip-info { background: var(--surface-soft); color: var(--text-muted); }
+.sev-chip-info .sev-dot { background: var(--text-muted); }
+
+.agent-errors {
+  margin-top: 14px; padding: 12px 14px;
+  background: var(--amber-soft); border: 1px solid #ffe1a8; border-radius: var(--radius-md);
+  font-size: 12.5px; color: #8a5a00; font-weight: 500;
+}
+.agent-errors.is-hidden { display: none; }
+
+.findings-list { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.findings-empty {
+  display: flex; align-items: center; gap: 10px;
+  padding: 16px 18px; margin-top: 16px;
+  background: var(--mint-soft); border-radius: var(--radius-md);
+  color: #0a8a63; font-weight: 600; font-size: 13.5px;
+}
+
+.finding-card {
+  padding: 15px 17px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-strong);
+}
+.finding-card.sev-critical, .finding-card.sev-high { border-left-color: var(--coral); }
+.finding-card.sev-medium { border-left-color: var(--amber); }
+.finding-card.sev-low { border-left-color: var(--blue); }
+.finding-card.sev-info { border-left-color: var(--text-muted); }
+
+.finding-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.finding-title-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.finding-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.finding-cat-icon {
+  width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px;
+}
+.finding-cat-icon.cat-security { background: var(--grad-warm); }
+.finding-cat-icon.cat-quality { background: var(--grad-cool); }
+.finding-loc { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+.finding-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; margin-top: 4px; }
+.finding-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.finding-tag {
+  font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary);
+}
+.finding-snippet {
+  margin-top: 10px; padding: 8px 12px;
+  background: #14101f; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: 11.5px; color: #d8d2f5;
+  overflow-x: auto; white-space: pre;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn-primary, .btn-primary:hover, .celebrate-dot { transition: none; animation: none; transform: none; }
 }

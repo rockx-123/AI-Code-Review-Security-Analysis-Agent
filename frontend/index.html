@@ -252,7 +252,10 @@
         <button class="btn-secondary" id="run-btn" type="button">
           <i class="ti ti-player-play" aria-hidden="true"></i> Run code &amp; see output
         </button>
-        <span class="hint">Experimental — see <code>docs/code-execution-safety.md</code>. Off by default on the server.</span>
+        <button class="btn-secondary" id="analyze-btn" type="button">
+          <i class="ti ti-shield-search" aria-hidden="true"></i> Analyze code (quality + security)
+        </button>
+        <span class="hint">Run: experimental, see <code>docs/code-execution-safety.md</code>. Analyze: static pattern-based detection, see <code>docs/detection-rules.md</code>.</span>
       </div>
       <div class="output-panel is-hidden" id="output-panel">
         <div class="output-header">
@@ -261,6 +264,15 @@
         </div>
         <pre class="output-body" id="output-body"></pre>
       </div>
+    </section>
+
+    <section class="panel card is-hidden" id="findings-panel" aria-live="polite">
+      <div class="results-header">
+        <h2>Analysis findings</h2>
+        <div class="severity-summary" id="severity-summary"></div>
+      </div>
+      <div class="agent-errors is-hidden" id="agent-errors-banner"></div>
+      <div class="findings-list" id="findings-list"></div>
     </section>
 
     <section class="panel card" aria-label="Secure coding knowledge base">

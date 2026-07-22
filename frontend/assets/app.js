@@ -275,6 +275,7 @@
     resultsPanel.classList.remove("is-hidden");
     outputPanel.classList.add("is-hidden");
     outputBody.textContent = "";
+    findingsPanel.classList.add("is-hidden");
     const valid = submission.validation.is_valid;
 
     resultsBadge.textContent = valid ? "Syntax valid" : "Syntax errors found";
@@ -353,6 +354,107 @@
     } finally {
       runBtn.disabled = false;
       runBtn.innerHTML = originalLabel;
+    }
+  });
+
+  // ---------------------------------------------------------------------
+  // Analyze code (Milestone 2) — Code Analysis + Security Vulnerability agents
+  // ---------------------------------------------------------------------
+  const analyzeBtn = el("analyze-btn");
+  const findingsPanel = el("findings-panel");
+  const severitySummary = el("severity-summary");
+  const findingsList = el("findings-list");
+  const agentErrorsBanner = el("agent-errors-banner");
+
+  const SEVERITY_ORDER = ["critical", "high", "medium", "low", "info"];
+  const SEVERITY_LABEL = { critical: "Critical", high: "High", medium: "Medium", low: "Low", info: "Info" };
+
+  function renderFindings(summary) {
+    findingsPanel.classList.remove("is-hidden");
+
+    if (summary.agent_errors && summary.agent_errors.length) {
+      agentErrorsBanner.classList.remove("is-hidden");
+      agentErrorsBanner.innerHTML =
+        `<i class="ti ti-alert-triangle" aria-hidden="true"></i> ` +
+        summary.agent_errors.map(escapeHtml).join(" · ");
+    } else {
+      agentErrorsBanner.classList.add("is-hidden");
+      agentErrorsBanner.innerHTML = "";
+    }
+
+    const counts = summary.counts_by_severity || {};
+    severitySummary.innerHTML = SEVERITY_ORDER
+      .filter((sev) => counts[sev] > 0)
+      .map((sev) => `<span class="sev-chip sev-chip-${sev}"><span class="sev-dot"></span>${counts[sev]} ${SEVERITY_LABEL[sev]}</span>`)
+      .join("");
+
+    findingsList.innerHTML = "";
+    if (!summary.findings || summary.findings.length === 0) {
+      findingsList.innerHTML = `
+        <div class="findings-empty">
+          <i class="ti ti-circle-check" aria-hidden="true"></i>
+          No issues found by the Code Analysis or Security Vulnerability agents. Clean pass — though
+          remember this is pattern-based static analysis, not a formal guarantee (see docs/detection-rules.md).
+        </div>`;
+      return;
+    }
+
+    summary.findings.forEach((f) => {
+      const card = document.createElement("div");
+      card.className = `finding-card sev-${f.severity}`;
+      const isSecurity = f.category === "security";
+      const loc = f.location.start_line === f.location.end_line
+        ? `L${f.location.start_line}`
+        : `L${f.location.start_line}–${f.location.end_line}`;
+
+      const tags = [];
+      if (f.owasp_category) tags.push(f.owasp_category);
+      if (f.cwe_id) tags.push(f.cwe_id);
+      if (f.knowledge_base_refs && f.knowledge_base_refs.length) tags.push("KB-grounded");
+
+      card.innerHTML = `
+        <div class="finding-head">
+          <div class="finding-title-row">
+            <span class="finding-cat-icon ${isSecurity ? "cat-security" : "cat-quality"}">
+              <i class="ti ${isSecurity ? "ti-shield-exclamation" : "ti-code"}" aria-hidden="true"></i>
+            </span>
+            <span class="finding-title">${escapeHtml(f.title)}</span>
+            <span class="sev-chip sev-chip-${f.severity}"><span class="sev-dot"></span>${SEVERITY_LABEL[f.severity]}</span>
+          </div>
+          <span class="finding-loc">${loc}</span>
+        </div>
+        <div class="finding-desc">${escapeHtml(f.description)}</div>
+        ${tags.length ? `<div class="finding-tags">${tags.map((t) => `<span class="finding-tag">${escapeHtml(t)}</span>`).join("")}</div>` : ""}
+        ${f.location.snippet ? `<div class="finding-snippet">${escapeHtml(f.location.snippet)}</div>` : ""}
+      `;
+      findingsList.appendChild(card);
+    });
+  }
+
+  analyzeBtn.addEventListener("click", async () => {
+    if (!currentSubmission) return;
+    analyzeBtn.disabled = true;
+    const originalLabel = analyzeBtn.innerHTML;
+    analyzeBtn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Analyzing…';
+    findingsPanel.classList.remove("is-hidden");
+    findingsList.innerHTML = `<div class="findings-empty" style="background:var(--surface-soft);color:var(--text-secondary);">Running Code Analysis + Security Vulnerability agents…</div>`;
+    severitySummary.innerHTML = "";
+    agentErrorsBanner.classList.add("is-hidden");
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/analysis/${currentSubmission.id}`, { method: "POST" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        findingsList.innerHTML = `<div class="findings-empty" style="background:var(--coral-soft);color:#c62328;">${escapeHtml(body.detail || `Request failed (${res.status})`)}</div>`;
+        return;
+      }
+      const summary = await res.json();
+      renderFindings(summary);
+    } catch (err) {
+      findingsList.innerHTML = `<div class="findings-empty" style="background:var(--coral-soft);color:#c62328;">Couldn't reach the backend: ${escapeHtml(err.message)}</div>`;
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = originalLabel;
     }
   });
 

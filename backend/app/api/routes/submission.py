@@ -117,7 +117,18 @@ def list_recent_submissions(limit: int = 10) -> list[SubmissionSummary]:
 
 @router.get("/{submission_id}", response_model=Submission)
 def get_submission(submission_id: str) -> Submission:
+    submission = _get_submission_or_404(submission_id)
+    return submission
+
+
+def _get_submission_or_404(submission_id: str) -> Submission:
     submission = _SUBMISSIONS.get(submission_id)
     if not submission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Submission not found")
     return submission
+
+
+def get_submission_by_id(submission_id: str) -> Submission | None:
+    """Used by the analysis route (Milestone 2) to look up a submission without importing
+    the private `_SUBMISSIONS` dict directly."""
+    return _SUBMISSIONS.get(submission_id)
