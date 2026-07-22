@@ -28,6 +28,7 @@ from app.services.file_handler import (
     enforce_size_limit,
     infer_language_from_filename,
 )
+from app.services.review_pipeline import analyze_submission
 from app.services.syntax_validator import get_validator
 
 router = APIRouter(prefix="/api/submissions", tags=["submission"])
@@ -57,7 +58,12 @@ def _build_submission(
         validation=validation,
     )
     _SUBMISSIONS[submission.id] = submission
+    analyze_submission(submission)
     return submission
+
+
+def get_submission_from_store(submission_id: str) -> Submission | None:
+    return _SUBMISSIONS.get(submission_id)
 
 
 @router.post("/paste", response_model=Submission, status_code=status.HTTP_201_CREATED)
@@ -117,7 +123,7 @@ def list_recent_submissions(limit: int = 10) -> list[SubmissionSummary]:
 
 @router.get("/{submission_id}", response_model=Submission)
 def get_submission(submission_id: str) -> Submission:
-    submission = _SUBMISSIONS.get(submission_id)
+    submission = get_submission_from_store(submission_id)
     if not submission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Submission not found")
     return submission
