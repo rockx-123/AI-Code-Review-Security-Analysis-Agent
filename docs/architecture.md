@@ -64,10 +64,8 @@ refactors.
    Report module exports ReviewSummary
 ```
 
-Steps 1–2 are implemented in Milestone 1. Steps 3–6 are stubbed as data contracts
-(see `docs/data-models.md`) but not yet implemented, so the frontend can already show the
-pipeline as a status stepper without lying about what's functional (submission/validation is
-live; analysis/remediation/summary are marked "planned").
+Steps 1–3 are implemented through Milestone 2 (submission + validation + parallel analysis and
+unified findings). Steps 4–6 remain planned for Milestones 3–4.
 
 ## 4. Why FastAPI + Chroma
 

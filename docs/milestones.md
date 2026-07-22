@@ -16,12 +16,22 @@ as each milestone lands.
 `docs/research-notes.md`, `backend/app/api/routes/submission.py`,
 `backend/app/services/syntax_validator.py`, `backend/app/rag/*`, `frontend/*`.
 
-## Milestone 2 — Analysis & Detection (planned)
+## Milestone 2 — Analysis & Detection (Week 3–4) — ✅ Complete
 
-- Implement **Code Analysis Agent**: code smell detection, complexity metrics, design anti-patterns (Python via `ast`, Java via structural heuristics/parser).
-- Implement **Security Vulnerability Agent**: OWASP-mapped static checks (SQLi, XSS, CSRF, hardcoded secrets, insecure auth, broken access control) with severity scoring.
-- Build the **Multi-Agent Orchestration** layer: pipeline runner, shared findings schema, agent-to-agent handoff, error isolation.
-- Wire orchestration to the existing Code Submission Module so a submitted file triggers the pipeline automatically.
+| # | Task | Status |
+|---|---|---|
+| 1 | Build Code Analysis Agent — detect code smells, complexity issues, design anti-patterns, poor practices with severity scoring | ✅ |
+| 2 | Build Security Vulnerability Agent — OWASP-standard checks with type/severity and location-specific flags | ✅ |
+| 3 | Implement multi-agent orchestration — run Code Analysis + Security agents in parallel and merge outputs | ✅ |
+| 4 | Validate detection behavior on sample Python and Java code with known issues/vulnerabilities | ✅ |
+
+**Artifacts:** `backend/app/services/code_analysis_agent.py`,
+`backend/app/services/security_vulnerability_agent.py`,
+`backend/app/services/analysis_orchestrator.py`,
+`backend/app/api/routes/submission.py`,
+`backend/tests/test_analysis_pipeline.py`,
+`backend/tests/samples/vulnerable_python_sample.txt`,
+`backend/tests/samples/vulnerable_java_sample.txt`.
 
 ## Milestone 3 — Remediation & Reporting UI (planned)
 

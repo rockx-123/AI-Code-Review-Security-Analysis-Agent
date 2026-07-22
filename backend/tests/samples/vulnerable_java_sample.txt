@@ -1,0 +1,20 @@
+public class VulnerableController {
+    private static final String PASSWORD = "super-secret-password";
+
+    @PermitAll
+    public String listUsers(String tenantId, String user, String role, String env, String zone, String org) {
+        String query = "SELECT * FROM users WHERE tenant='" + tenantId + "'";
+        statement.execute(query);
+        http.csrf().disable();
+        if (tenantId != null) {
+            if (user != null) {
+                if (role != null) {
+                    if (env != null) {
+                        System.out.println(zone + org);
+                    }
+                }
+            }
+        }
+        return "ok";
+    }
+}

@@ -1,6 +1,6 @@
 # AI Code Review & Security Analysis Agent
 
-![Milestone](https://img.shields.io/badge/milestone-1%20of%204-4cc9f0)
+![Milestone](https://img.shields.io/badge/milestone-2%20of%204-4cc9f0)
 ![Status](https://img.shields.io/badge/status-in%20development-a78bfa)
 ![Python](https://img.shields.io/badge/python-3.11%2B-34d399)
 ![License](https://img.shields.io/badge/license-MIT-9aa3b8)
@@ -65,10 +65,15 @@ Full detail, agent contracts, and data models: [`docs/architecture.md`](docs/arc
 | Code Submission Module — paste + upload, Python/Java syntax validation | `backend/app/api/routes/submission.py`, `backend/app/services/syntax_validator.py`, `frontend/` |
 | Secure Coding Knowledge Base + RAG ingestion pipeline (chunk → embed → index) — **3 documents, 22 chunks**, see [`docs/knowledge-base.md`](docs/knowledge-base.md) | `backend/app/rag/` |
 
-The Code Analysis, Security Vulnerability, Remediation, and PR Summary **agents**, the
-conversational assistant, findings UI, and report export are **not built yet** — those land in
-Milestones 2–4. The pipeline stepper in the UI previews what's coming; only the submission and
-validation step is functional today.
+## What's implemented in Milestone 2
+
+| Deliverable | Where |
+|---|---|
+| Code Analysis Agent — code smells, complexity, design anti-pattern heuristics with severity scoring | `backend/app/services/code_analysis_agent.py` |
+| Security Vulnerability Agent — OWASP-aligned static checks with type/severity/location | `backend/app/services/security_vulnerability_agent.py` |
+| Parallel multi-agent orchestration and unified findings list | `backend/app/services/analysis_orchestrator.py` |
+| Submission-triggered analysis + findings retrieval endpoint | `backend/app/api/routes/submission.py` (`GET /api/submissions/{id}/findings`) |
+| Validation cases for Python and Java vulnerable/poor-quality samples | `backend/tests/test_analysis_pipeline.py`, `backend/tests/samples/` |
 
 ## Project structure
 
@@ -130,6 +135,6 @@ pytest -q
 See [`docs/milestones.md`](docs/milestones.md) for full detail.
 
 - **Milestone 1 (done):** Research, architecture, Code Submission Module, secure-coding RAG knowledge base.
-- **Milestone 2:** Code Analysis Agent + Security Vulnerability Agent + multi-agent orchestration.
+- **Milestone 2 (done):** Code Analysis Agent + Security Vulnerability Agent + multi-agent orchestration.
 - **Milestone 3:** Remediation Agent + PR Summary Agent + Findings/Severity UI.
 - **Milestone 4:** Conversational Code Assistant (RAG Q&A), report generation/export, polish & hardening.

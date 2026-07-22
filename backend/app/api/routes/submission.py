@@ -7,8 +7,9 @@ Entry points, one shared validation path:
   GET  /api/submissions         — recent activity feed (lightweight summaries)
   GET  /api/submissions/{id}    — full submission detail
 
-All return/derive from `Submission`, including its `SyntaxValidationResult`. Nothing here calls
-into the (not-yet-built) agent pipeline — that wiring is Milestone 2, per docs/architecture.md.
+All return/derive from `Submission`, including its `SyntaxValidationResult`. Starting in
+Milestone 2, each accepted submission is automatically analyzed by the Code Analysis and Security
+Vulnerability agents and can be retrieved as unified findings.
 """
 from __future__ import annotations
 
@@ -17,11 +18,13 @@ from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from app.models.schemas import (
     EntryMethod,
     Language,
+    ReviewSummary,
     Submission,
     SubmissionRequest,
     SubmissionSource,
     SubmissionSummary,
 )
+from app.services.analysis_orchestrator import AnalysisOrchestrator
 from app.services.file_handler import (
     UploadValidationError,
     decode_source,
@@ -32,9 +35,10 @@ from app.services.syntax_validator import get_validator
 
 router = APIRouter(prefix="/api/submissions", tags=["submission"])
 
-# In-memory store for Milestone 1. Replaced by persistent storage once the orchestration layer
-# (Milestone 2) needs to look submissions up by id across requests/processes.
+# In-memory stores for Milestone 1/2. Replaced by persistent storage in later milestones.
 _SUBMISSIONS: dict[str, Submission] = {}
+_REVIEWS: dict[str, ReviewSummary] = {}
+_ORCHESTRATOR = AnalysisOrchestrator()
 
 
 def _build_submission(
@@ -57,6 +61,16 @@ def _build_submission(
         validation=validation,
     )
     _SUBMISSIONS[submission.id] = submission
+    try:
+        _REVIEWS[submission.id] = _ORCHESTRATOR.run(submission)
+    except Exception:
+        _REVIEWS[submission.id] = ReviewSummary(
+            submission_id=submission.id,
+            counts_by_severity=SeverityCounts(),
+            top_risks=[],
+            narrative="",
+            findings=[],
+        )
     return submission
 
 
@@ -121,3 +135,16 @@ def get_submission(submission_id: str) -> Submission:
     if not submission:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Submission not found")
     return submission
+
+
+@router.get("/{submission_id}/findings", response_model=ReviewSummary)
+def get_submission_findings(submission_id: str) -> ReviewSummary:
+    submission = _SUBMISSIONS.get(submission_id)
+    if not submission:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Submission not found")
+    review = _REVIEWS.get(submission_id)
+    if review is None:
+        review = _ORCHESTRATOR.run(submission)
+        _REVIEWS[submission_id] = review
+    return review
+    SeverityCounts,
