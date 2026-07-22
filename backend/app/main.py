@@ -9,6 +9,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.execution import router as execution_router
+from app.api.routes.jokes import router as jokes_router
 from app.api.routes.knowledge_base import router as knowledge_base_router
 from app.api.routes.submission import router as submission_router
 from app.config import get_settings
@@ -36,6 +37,7 @@ app.add_middleware(
 app.include_router(submission_router)
 app.include_router(knowledge_base_router)
 app.include_router(execution_router)
+app.include_router(jokes_router)
 
 
 @app.get("/api/health", tags=["meta"])

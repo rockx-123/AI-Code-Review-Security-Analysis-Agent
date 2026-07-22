@@ -124,6 +124,16 @@ class ExecutionResult(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# External integrations
+# ---------------------------------------------------------------------------
+
+class RandomJoke(BaseModel):
+    setup: str
+    punchline: str
+    source: str
+
+
+# ---------------------------------------------------------------------------
 # Finding / ReviewSummary — contract frozen in M1, populated starting M2/M3
 # ---------------------------------------------------------------------------
 

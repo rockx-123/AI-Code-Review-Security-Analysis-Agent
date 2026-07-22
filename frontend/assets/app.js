@@ -468,6 +468,44 @@
   loadHistory();
 
   // ---------------------------------------------------------------------
+  // Random joke panel
+  // ---------------------------------------------------------------------
+  const jokeBtn = el("joke-btn");
+  const jokeOutput = el("joke-output");
+
+  async function loadRandomJoke() {
+    jokeBtn.disabled = true;
+    const originalLabel = jokeBtn.innerHTML;
+    jokeBtn.innerHTML = '<i class="ti ti-loader-2" aria-hidden="true"></i> Loading…';
+    jokeOutput.innerHTML = `<div class="kb-empty">Fetching a random joke…</div>`;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/jokes/random`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.detail || `Request failed (${res.status})`);
+      }
+      const data = await res.json();
+      jokeOutput.innerHTML = `
+        <div class="kb-result-card">
+          <div class="kb-result-head">
+            <span class="kb-result-title">Random joke</span>
+            <span class="kb-result-score">${escapeHtml(data.source)}</span>
+          </div>
+          <div class="kb-result-text">${escapeHtml(data.setup)}</div>
+          <div class="kb-result-text">${escapeHtml(data.punchline)}</div>
+        </div>
+      `;
+    } catch (err) {
+      jokeOutput.innerHTML = `<div class="kb-empty">${escapeHtml(err.message)}</div>`;
+    } finally {
+      jokeBtn.disabled = false;
+      jokeBtn.innerHTML = originalLabel;
+    }
+  }
+
+  jokeBtn.addEventListener("click", loadRandomJoke);
+
+  // ---------------------------------------------------------------------
   // Knowledge base status, category filter + search
   // ---------------------------------------------------------------------
   const kbDot = el("kb-dot");
