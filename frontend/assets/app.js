@@ -491,7 +491,7 @@
     try {
       const submission = mode === "paste" ? await submitPaste() : await submitUpload();
       renderResults(submission);
-      submitHint.textContent = "Done. Analysis, remediation, and summary agents arrive in later milestones.";
+      submitHint.textContent = "Done. Click \"Analyze code\" below for quality + security findings — remediation and PR summaries arrive in later milestones.";
       loadHistory();
     } catch (err) {
       resultsPanel.classList.remove("is-hidden");
