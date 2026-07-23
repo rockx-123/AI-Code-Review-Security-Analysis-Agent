@@ -458,6 +458,38 @@
     }
   });
 
+  const downloadPdfBtn = el("download-pdf-btn");
+  downloadPdfBtn.addEventListener("click", async () => {
+    if (!currentSubmission) return;
+    downloadPdfBtn.disabled = true;
+    const originalLabel = downloadPdfBtn.innerHTML;
+    downloadPdfBtn.textContent = "Preparing…";
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/reports/${currentSubmission.id}/pdf`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.detail || `Request failed (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `code-review-report-${currentSubmission.id.slice(0, 8)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      // Revoke shortly after triggering the download rather than immediately, since some
+      // browsers process the download asynchronously and would otherwise race the revoke.
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } catch (err) {
+      alert(`Couldn't generate the PDF report: ${err.message}`);
+    } finally {
+      downloadPdfBtn.disabled = false;
+      downloadPdfBtn.innerHTML = originalLabel;
+    }
+  });
+
   async function submitPaste() {
     const code = codeInput.value;
     if (!code.trim()) throw new Error("Paste or type some code before submitting.");

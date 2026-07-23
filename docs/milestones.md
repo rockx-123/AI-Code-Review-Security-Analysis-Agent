@@ -44,6 +44,11 @@ summary, and the polished findings/severity UI. The API contract already has slo
 
 ## Milestone 3 — Remediation & Reporting UI (planned)
 
+> **Note:** PDF report export (`GET /api/reports/{id}/pdf`) was built ahead of schedule, on
+> request, on top of Milestone 2's output — it exports the current findings + severity summary
+> only. It does **not** include remediation suggestions or a PR-style narrative, since those are
+> still Remediation Agent / PR Summary Agent output below. The report itself says so explicitly.
+
 - Implement **Remediation Agent**: fix suggestions + corrected code snippets per finding, grounded in the RAG knowledge base.
 - Implement **PR Summary Agent**: rolls up all findings into a structured, human-readable review summary.
 - Build the **Findings Display & Severity Scoring** UI (developer portal view): filterable, severity-coded results panel.

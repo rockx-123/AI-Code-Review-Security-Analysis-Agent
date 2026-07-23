@@ -12,6 +12,9 @@ sentence-transformers==3.1.1
 # --- Utilities ---
 python-dotenv==1.0.1
 
+# --- Report export (PDF) ---
+reportlab==4.2.5
+
 # --- Testing ---
 pytest==8.3.3
 httpx==0.27.2

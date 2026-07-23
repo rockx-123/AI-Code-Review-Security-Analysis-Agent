@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes.analysis import router as analysis_router
 from app.api.routes.execution import router as execution_router
 from app.api.routes.knowledge_base import router as knowledge_base_router
+from app.api.routes.reports import router as reports_router
 from app.api.routes.submission import router as submission_router
 from app.config import get_settings
 
@@ -39,6 +40,7 @@ app.include_router(submission_router)
 app.include_router(knowledge_base_router)
 app.include_router(execution_router)
 app.include_router(analysis_router)
+app.include_router(reports_router)
 
 
 @app.get("/api/health", tags=["meta"])

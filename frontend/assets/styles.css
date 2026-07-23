@@ -877,6 +877,15 @@ html, body {
   overflow-x: auto; white-space: pre;
 }
 
+.findings-header-actions {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.btn-download-pdf {
+  padding: 7px 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.btn-download-pdf:disabled { opacity: 0.6; cursor: progress; }
+
 @media (prefers-reduced-motion: reduce) {
   .btn-primary, .btn-primary:hover, .celebrate-dot { transition: none; animation: none; transform: none; }
 }

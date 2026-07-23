@@ -269,7 +269,13 @@
     <section class="panel card is-hidden" id="findings-panel" aria-live="polite">
       <div class="results-header">
         <h2>Analysis findings</h2>
-        <div class="severity-summary" id="severity-summary"></div>
+        <div class="findings-header-actions">
+          <div class="severity-summary" id="severity-summary"></div>
+          <button class="btn-secondary btn-download-pdf" id="download-pdf-btn" type="button">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 11 5 5 5-5"/><path d="M5 19h14"/></svg>
+            Download PDF
+          </button>
+        </div>
       </div>
       <div class="agent-errors is-hidden" id="agent-errors-banner"></div>
       <div class="findings-list" id="findings-list"></div>
